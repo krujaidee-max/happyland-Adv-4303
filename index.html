@@ -1014,20 +1014,41 @@ function playSfx(el, vol){
   const shuffle=(arr)=>{ const A=arr.slice(); for(let i=A.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [A[i],A[j]]=[A[j],A[i]] } return A };
 
 /* ===== พูลรูปภาพต่อด่าน: data1, data2, data3 (word1..word50) ===== */
-const IMG_EXT = '.png';                           // ถ้ารูปเป็น .webp หรือ .jpg เปลี่ยนตรงนี้
+const IMG_EXT = '.png';   // เหมือนเดิม
+
 function buildPool(dir, count=50, ext=IMG_EXT){
-  const m = new Map();                            // key: 'word1' → path 'data1/word1.png'
+  const m = new Map();
   for(let i=1;i<=count;i++){
     const key = 'word'+i;
     m.set(key, `${dir}/${key}${ext}`);
   }
   return m;
 }
+
+/* ด่าน 3: รวม 3 โฟลเดอร์ data3 + data4 + data5 */
+function buildLevel3Pool(){
+  const m = new Map();
+  for (let i = 1; i <= 48; i++){
+    const key = 'word' + i;
+    let folder = 'data3';
+
+    if (i >= 23 && i <= 26) {
+      folder = 'data5';     // 👈 word23–26 ไป data5
+    } else if (i >= 27) {
+      folder = 'data4';     // 👈 word27–48 ไป data4
+    }
+
+    m.set(key, `${folder}/${key}.png`);
+  }
+  return m;
+}
+
 const LEVEL_POOLS = {
   1: buildPool('data1', 34),
   2: buildPool('data2', 12),
-  3: buildPool('data3', 48),  // ถ้าด่าน 3 ก็เก็บไว้ที่ data2 เหมือนเดิม ให้เปลี่ยนเป็น 'data2'
+  3: buildLevel3Pool(),   // 👈 ด่าน 3 ใช้ฟังก์ชันใหม่
 };
+
 
 // === Image preloader (โหลดครั้งเดียว เก็บแคช กันโหลดซ้ำ) ===
 const __imgUrlCache  = new Set();          // จำว่า URL ไหน “เคยโหลด” แล้ว
@@ -2071,42 +2092,32 @@ const LEVEL3_BANK = [
   { prompt:'Nun',               imgKey:'word20', voiceRel: 20 },
   { prompt:'Diver',             imgKey:'word21', voiceRel: 21 },
   { prompt:'Mechanic',          imgKey:'word22', voiceRel: 22 },
-
-  { prompt:'Musician',
-    voiceRel: 23,
-    img: 'image/word23.png'   },
-  { prompt:'Fisherman',
-    voiceRel: 24,
-    img: 'image/word24.png'   },
-  { prompt:'Dentist',
-    voiceRel: 25,
-    img: 'image/word25.png'   },
-  { prompt:'Designer',
-    voiceRel: 26,
-    img: 'image/word26.png'   },
-
-{ prompt:'Journalist',      voiceRel:27, img:'data4/word27.png' },
-{ prompt:'Photographer',    voiceRel:28, img:'data4/word28.png' },
-{ prompt:'Delivery man',    voiceRel:29, img:'data4/word29.png' },
-{ prompt:'Politician',      voiceRel:30, img:'data4/word30.png' },
-{ prompt:'Race car driver', voiceRel:31, img:'data4/word31.png' },
-{ prompt:'Runner',          voiceRel:32, img:'data4/word32.png' },
-{ prompt:'Boxer',           voiceRel:33, img:'data4/word33.png' },
-{ prompt:'Postman',         voiceRel:34, img:'data4/word34.png' },
-{ prompt:'Gardener',        voiceRel:35, img:'data4/word35.png' },
-{ prompt:'Climber',         voiceRel:36, img:'data4/word36.png' },
-{ prompt:'Veterinarian',    voiceRel:37, img:'data4/word37.png' },
-{ prompt:'Chemist',         voiceRel:38, img:'data4/word38.png' },
-{ prompt:'Scientist',       voiceRel:39, img:'data4/word39.png' },
-{ prompt:'Singer',          voiceRel:40, img:'data4/word40.png' },
-{ prompt:'Dancer',          voiceRel:41, img:'data4/word41.png' },
-{ prompt:'Priest',          voiceRel:42, img:'data4/word42.png' },
-{ prompt:'Student',         voiceRel:43, img:'data4/word43.png' },
-{ prompt:'Air Force pilot', voiceRel:44, img:'data4/word44.png' },
-{ prompt:'DJ',              voiceRel:45, img:'data4/word45.png' },
-{ prompt:'Detective',       voiceRel:46, img:'data4/word46.png' },
-{ prompt:'Clown',           voiceRel:47, img:'data4/word47.png' },
-{ prompt:'Pirate',          voiceRel:48, img:'data4/word48.png' },
+  { prompt:'Musician',          imgKey:'word23', voiceRel: 23 },
+  { prompt:'Fisherman',         imgKey:'word24', voiceRel: 24 },
+  { prompt:'Dentist',           imgKey:'word25', voiceRel: 25 },
+  { prompt:'Designer',          imgKey:'word26', voiceRel: 26 },
+  { prompt:'Journalist',        imgKey:'word27', voiceRel: 27 },
+  { prompt:'Photographer',      imgKey:'word28', voiceRel: 28 },
+  { prompt:'Delivery man',      imgKey:'word29', voiceRel: 29 },
+  { prompt:'Politician',        imgKey:'word30', voiceRel: 30 },
+  { prompt:'Race car driver',   imgKey:'word31', voiceRel: 31 },
+  { prompt:'Runner',            imgKey:'word32', voiceRel: 32 },
+  { prompt:'Boxer',             imgKey:'word33', voiceRel: 33 },
+  { prompt:'Postman',           imgKey:'word34', voiceRel: 34 },
+  { prompt:'Gardener',          imgKey:'word35', voiceRel: 35 },
+  { prompt:'Climber',           imgKey:'word36', voiceRel: 36 },
+  { prompt:'Veterinarian',      imgKey:'word37', voiceRel: 37 },
+  { prompt:'Chemist',           imgKey:'word38', voiceRel: 38 },
+  { prompt:'Scientist',         imgKey:'word39', voiceRel: 39 },
+  { prompt:'Singer',            imgKey:'word40', voiceRel: 40 },
+  { prompt:'Dancer',            imgKey:'word41', voiceRel: 41 },
+  { prompt:'Priest',            imgKey:'word42', voiceRel: 42 },
+  { prompt:'Student',           imgKey:'word43', voiceRel: 43 },
+  { prompt:'Air Force pilot',   imgKey:'word44', voiceRel: 44 },
+  { prompt:'DJ',                imgKey:'word45', voiceRel: 45 },
+  { prompt:'Detective',         imgKey:'word46', voiceRel: 46 },
+  { prompt:'Clown',             imgKey:'word47', voiceRel: 47 },
+  { prompt:'Pirate',            imgKey:'word48', voiceRel: 48 },
 ];
 
 
