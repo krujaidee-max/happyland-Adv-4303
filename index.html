@@ -2320,24 +2320,35 @@ function pauseGame(){
 }
   document.getElementById('pauseBtn')?.addEventListener('click', ()=>{ if(!paused){ pauseGame(); document.getElementById('pauseBtn').textContent='▶️ ต่อ'; } else { resumeGame(); document.getElementById('pauseBtn').textContent='⏸ หยุด'; } });
   
-
 document.getElementById('quickRestart')?.addEventListener('click', ()=>{
-        cancelPostRoundPhase();    // ⬅ ยกเลิก timeout + ลบอีโมจิ
-    clearCountdown();
-    document.body.classList.remove('prestart');
-    restorePlayfield(); 
-    overlay.style.visibility='hidden';
-    overlay.style.opacity='0';
-    resetState();
-    document.body.classList.remove('in-game');
-    document.getElementById('startScreen').style.display = 'none';
-    document.getElementById('landing').classList.remove('hide');
-         bgm.currentTime = 0;
-       bgm.play().catch(()=>{});
+  // ยกเลิก phase หลังจบรอบ + นับถอยหลัง
+  cancelPostRoundPhase();
+  clearCountdown();
 
+  // ✅ ล้าง element บนจอที่ยังค้างอยู่ (ตัวเลือก / อีโมจิ / tap-target)
+  document.querySelectorAll('.option, .tap-target, .fly-emoji').forEach(n => n.remove());
+
+  // ✅ หยุดเสียงอ่านคำศัพท์ที่กำลังเล่นอยู่
+  if (voiceAudio) {
+    try {
+      voiceAudio.pause();
+      voiceAudio.currentTime = 0;
+    } catch (_) {}
+  }
+
+  document.body.classList.remove('prestart');
+  restorePlayfield();
+  overlay.style.visibility='hidden';
+  overlay.style.opacity='0';
+  resetState();
+  document.body.classList.remove('in-game');
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('landing').classList.remove('hide');
+
+  // BGM ให้ยังเล่นต่อที่เมนูหลักเหมือนเดิม
+  bgm.currentTime = 0;
+  bgm.play().catch(()=>{});
 });
-
-
 
   restartBtn.addEventListener('click', ()=>{
        cancelPostRoundPhase();
@@ -2599,6 +2610,7 @@ function getMissionTitle(lv){
 </script>
 </body>
 </html>
+
 
 
 
